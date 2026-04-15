@@ -2,6 +2,8 @@
 
 A standalone Perchance custom generator that converts URLs, cards, images, PDFs, and web pages into ai-character-chat-compatible Dexie JSON exports.
 
+[Try it on Perchance](https://perchance.org/generate-character-from-url)
+
 Version v6 adds:
 
 - Combined batch export (one multi-character Dexie JSON file)
