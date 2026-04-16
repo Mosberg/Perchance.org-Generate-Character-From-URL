@@ -226,6 +226,84 @@
     white-space: pre-wrap;
   }
 
+  .batchStatsGrid {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .batchStatCard {
+    border: 1px solid var(--input-border);
+    border-radius: 14px;
+    padding: 0.62rem 0.75rem;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.92),
+      rgba(219, 241, 235, 0.62)
+    );
+    box-shadow: 0 8px 22px rgba(19, 34, 46, 0.06);
+  }
+
+  .batchStatLabel {
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .batchStatValue {
+    margin-top: 0.2rem;
+    font-size: 1.16rem;
+    line-height: 1.1;
+    font-weight: 700;
+    color: #0b3145;
+  }
+
+  .batchStatValue.small {
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .batchOutcomeTrack {
+    margin-top: 0.65rem;
+    width: 100%;
+    height: 13px;
+    display: flex;
+    overflow: hidden;
+    border-radius: 999px;
+    border: 1px solid rgba(19, 34, 46, 0.12);
+    background: rgba(19, 34, 46, 0.08);
+  }
+
+  .batchOutcomeSegment {
+    height: 100%;
+    width: 0;
+    transition: width 0.2s ease;
+  }
+
+  .batchOutcomeSegment.is-success {
+    background: linear-gradient(90deg, #179f87, #0d8b78);
+  }
+
+  .batchOutcomeSegment.is-failed {
+    background: linear-gradient(90deg, #d56f52, #c55438);
+  }
+
+  .batchOutcomeSegment.is-skipped {
+    background: linear-gradient(90deg, #c7ad68, #b88f3f);
+  }
+
+  .batchOutcomeSegment.is-running {
+    background: linear-gradient(90deg, #7ba9d6, #5e8bb8);
+  }
+
+  .batchOutcomeLegend {
+    margin-top: 0.4rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
   .rememberRow {
     display: flex;
     flex-wrap: wrap;
@@ -550,6 +628,10 @@
     .batchControlsGrid {
       grid-template-columns: 1fr;
     }
+
+    .batchStatsGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>
 
@@ -580,14 +662,14 @@
     </p>
     <br />
     <a
-      href="https://github.com/Mosberg/generate-character-from-url/wiki/User-Guide"
+      href="https://github.com/Mosberg/Perchance.org-Generate-Character-From-URL/wiki/User-Guide"
       target="_blank"
       rel="noopener noreferrer"
       >USER GUIDE
     </a>
     <br />
     <a
-      href="https://github.com/Mosberg/generate-character-from-url/wiki/README"
+      href="https://github.com/Mosberg/Perchance.org-Generate-Character-From-URL/wiki/README"
       target="_blank"
       rel="noopener noreferrer"
       >README
@@ -1377,6 +1459,68 @@
             <input id="batchProgressInput" class="fieldInput" readonly />
           </div>
           <div>
+            <label class="inputLabel" for="batchStatsDashboard"
+              >Live queue statistics</label
+            >
+            <div id="batchStatsDashboard" class="batchStatsGrid">
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Processed</div>
+                <div id="batchStatProcessedValue" class="batchStatValue">
+                  0/0
+                </div>
+              </div>
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Success rate</div>
+                <div id="batchStatSuccessRateValue" class="batchStatValue">
+                  0.0%
+                </div>
+              </div>
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Throughput</div>
+                <div id="batchStatThroughputValue" class="batchStatValue">
+                  0/min
+                </div>
+              </div>
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Estimated time left</div>
+                <div id="batchStatEtaValue" class="batchStatValue">0s</div>
+              </div>
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Average duration</div>
+                <div id="batchStatAverageDurationValue" class="batchStatValue">
+                  0s
+                </div>
+              </div>
+              <div class="batchStatCard">
+                <div class="batchStatLabel">Top error category</div>
+                <div id="batchStatTopErrorValue" class="batchStatValue small">
+                  none
+                </div>
+              </div>
+            </div>
+            <div id="batchOutcomeTrack" class="batchOutcomeTrack">
+              <div
+                id="batchOutcomeSuccessBar"
+                class="batchOutcomeSegment is-success"
+              ></div>
+              <div
+                id="batchOutcomeFailedBar"
+                class="batchOutcomeSegment is-failed"
+              ></div>
+              <div
+                id="batchOutcomeSkippedBar"
+                class="batchOutcomeSegment is-skipped"
+              ></div>
+              <div
+                id="batchOutcomeRunningBar"
+                class="batchOutcomeSegment is-running"
+              ></div>
+            </div>
+            <div id="batchOutcomeLegend" class="batchOutcomeLegend">
+              Success 0 | Failed 0 | Skipped 0 | Running 0
+            </div>
+          </div>
+          <div>
             <label class="inputLabel" for="batchReportCardInput"
               >End-of-run report card</label
             >
@@ -1974,6 +2118,25 @@
     batchDropZone: document.getElementById("batchDropZone"),
     batchFileInput: document.getElementById("batchFileInput"),
     batchReportCardInput: document.getElementById("batchReportCardInput"),
+    batchStatsDashboard: document.getElementById("batchStatsDashboard"),
+    batchStatProcessedValue: document.getElementById("batchStatProcessedValue"),
+    batchStatSuccessRateValue: document.getElementById(
+      "batchStatSuccessRateValue",
+    ),
+    batchStatThroughputValue: document.getElementById(
+      "batchStatThroughputValue",
+    ),
+    batchStatEtaValue: document.getElementById("batchStatEtaValue"),
+    batchStatAverageDurationValue: document.getElementById(
+      "batchStatAverageDurationValue",
+    ),
+    batchStatTopErrorValue: document.getElementById("batchStatTopErrorValue"),
+    batchOutcomeTrack: document.getElementById("batchOutcomeTrack"),
+    batchOutcomeSuccessBar: document.getElementById("batchOutcomeSuccessBar"),
+    batchOutcomeFailedBar: document.getElementById("batchOutcomeFailedBar"),
+    batchOutcomeSkippedBar: document.getElementById("batchOutcomeSkippedBar"),
+    batchOutcomeRunningBar: document.getElementById("batchOutcomeRunningBar"),
+    batchOutcomeLegend: document.getElementById("batchOutcomeLegend"),
     validationRequireNameCheckbox: document.getElementById(
       "validationRequireNameCheckbox",
     ),
@@ -3258,6 +3421,167 @@
     els.batchReportCardInput.textContent = text || "";
   }
 
+  function clampPercent(value) {
+    if (!Number.isFinite(value)) return 0;
+    return Math.max(0, Math.min(100, value));
+  }
+
+  function formatDurationCompact(ms) {
+    const safeMs = Number(ms);
+    if (!Number.isFinite(safeMs) || safeMs <= 0) return "0s";
+    const totalSeconds = Math.round(safeMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+    if (minutes > 0) return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+    return `${seconds}s`;
+  }
+
+  function percentileFromSorted(sortedValues, percentile) {
+    if (!Array.isArray(sortedValues) || sortedValues.length === 0) return 0;
+    const p = Math.max(0, Math.min(1, Number(percentile) || 0));
+    const index = (sortedValues.length - 1) * p;
+    const lowerIndex = Math.floor(index);
+    const upperIndex = Math.ceil(index);
+    if (lowerIndex === upperIndex) return sortedValues[lowerIndex];
+    const weight = index - lowerIndex;
+    return (
+      sortedValues[lowerIndex] * (1 - weight) +
+      sortedValues[upperIndex] * weight
+    );
+  }
+
+  function buildLiveBatchStats(manifest, totalCountHint = 0) {
+    const entries = manifest?.entries || [];
+    const totalCount = Math.max(Number(totalCountHint) || 0, entries.length);
+    const runningCount = entries.filter(
+      (entry) => entry.status === "running",
+    ).length;
+    const successCount = entries.filter(
+      (entry) => entry.status === "success",
+    ).length;
+    const failedCount = entries.filter(
+      (entry) => entry.status === "failed",
+    ).length;
+    const skippedCount = entries.filter(
+      (entry) => entry.status === "skipped",
+    ).length;
+    const processedCount = successCount + failedCount + skippedCount;
+    const completedEntries = entries.filter(
+      (entry) => entry.status !== "running",
+    );
+
+    const completedDurations = completedEntries
+      .map((entry) => Number(entry.durationMs) || 0)
+      .filter((value) => Number.isFinite(value) && value >= 0);
+    const avgDurationMs =
+      completedDurations.length === 0
+        ? 0
+        : completedDurations.reduce((sum, value) => sum + value, 0) /
+          completedDurations.length;
+
+    const totalRetryAttempts = completedEntries.reduce(
+      (sum, entry) => sum + Math.max(0, (Number(entry.attempts) || 1) - 1),
+      0,
+    );
+
+    const createdAtMs = Date.parse(manifest?.createdAt || "");
+    const elapsedMs = Number.isFinite(createdAtMs)
+      ? Math.max(0, Date.now() - createdAtMs)
+      : 0;
+    const throughputPerMinute =
+      elapsedMs <= 0 ? 0 : (processedCount / elapsedMs) * 60000;
+    const remainingCount = Math.max(0, totalCount - processedCount);
+    const etaMs =
+      throughputPerMinute <= 0
+        ? 0
+        : (remainingCount / throughputPerMinute) * 60000;
+
+    const errorCounts = {};
+    for (const entry of completedEntries) {
+      if (!entry.errorCategory) continue;
+      errorCounts[entry.errorCategory] =
+        (errorCounts[entry.errorCategory] || 0) + 1;
+    }
+    const mostCommonErrorCategory = Object.entries(errorCounts).sort(
+      (a, b) => b[1] - a[1],
+    )[0]?.[0];
+
+    return {
+      totalCount,
+      processedCount,
+      runningCount,
+      successCount,
+      failedCount,
+      skippedCount,
+      successRate:
+        processedCount === 0 ? 0 : (successCount / processedCount) * 100,
+      completionPercent:
+        totalCount === 0 ? 0 : (processedCount / totalCount) * 100,
+      avgDurationMs,
+      totalRetryAttempts,
+      throughputPerMinute,
+      etaMs,
+      mostCommonErrorCategory,
+    };
+  }
+
+  function renderBatchStats(stats, options = {}) {
+    if (!els.batchStatsDashboard) return;
+    const idle = !!options.idle;
+    const totalCount = Number(stats?.totalCount) || 0;
+    const processedCount = Number(stats?.processedCount) || 0;
+    const runningCount = Number(stats?.runningCount) || 0;
+    const successCount = Number(stats?.successCount) || 0;
+    const failedCount = Number(stats?.failedCount) || 0;
+    const skippedCount = Number(stats?.skippedCount) || 0;
+    const successRate = Number(stats?.successRate) || 0;
+    const avgDurationMs = Number(stats?.avgDurationMs) || 0;
+    const throughputPerMinute = Number(stats?.throughputPerMinute) || 0;
+    const etaMs = Number(stats?.etaMs) || 0;
+    const totalRetryAttempts = Number(stats?.totalRetryAttempts) || 0;
+
+    els.batchStatProcessedValue.textContent = `${processedCount}/${totalCount}`;
+    els.batchStatSuccessRateValue.textContent = `${successRate.toFixed(1)}%`;
+    els.batchStatThroughputValue.textContent =
+      throughputPerMinute > 0
+        ? `${throughputPerMinute.toFixed(2)}/min`
+        : idle
+          ? "0/min"
+          : "warming up";
+    els.batchStatEtaValue.textContent =
+      etaMs > 0 ? formatDurationCompact(etaMs) : idle ? "0s" : "calculating";
+    els.batchStatAverageDurationValue.textContent =
+      formatDurationCompact(avgDurationMs);
+    els.batchStatTopErrorValue.textContent =
+      stats?.mostCommonErrorCategory || "none";
+
+    const denominator = Math.max(1, totalCount);
+    els.batchOutcomeSuccessBar.style.width = `${clampPercent((successCount / denominator) * 100)}%`;
+    els.batchOutcomeFailedBar.style.width = `${clampPercent((failedCount / denominator) * 100)}%`;
+    els.batchOutcomeSkippedBar.style.width = `${clampPercent((skippedCount / denominator) * 100)}%`;
+    els.batchOutcomeRunningBar.style.width = `${clampPercent((runningCount / denominator) * 100)}%`;
+    els.batchOutcomeLegend.textContent = `Success ${successCount} | Failed ${failedCount} | Skipped ${skippedCount} | Running ${runningCount} | Retries ${totalRetryAttempts}`;
+  }
+
+  function updateBatchStatsFromManifest(manifest, totalCountHint = 0) {
+    const stats = buildLiveBatchStats(manifest, totalCountHint);
+    renderBatchStats(stats, { idle: false });
+    return stats;
+  }
+
+  function updateIdleBatchStatsPreview() {
+    if (state.isBatchRunning) return;
+    const queuedCount = parseUrlTextToList(els.batchUrlsTextarea.value).length;
+    const manifest = {
+      createdAt: new Date().toISOString(),
+      entries: [],
+    };
+    const stats = buildLiveBatchStats(manifest, queuedCount);
+    renderBatchStats(stats, { idle: true });
+  }
+
   async function ensureJsZip() {
     if (window.JSZip) return window.JSZip;
     if (!state.jsZipPromise) {
@@ -3767,6 +4091,7 @@
       els.batchFilenameCaseSelect.value,
     );
     els.batchFilenamePreviewInput.value = `${preview || "character"}.json`;
+    updateIdleBatchStatsPreview();
   }
 
   async function saveBlobToFolderIfEnabled(fileName, blob) {
@@ -3869,7 +4194,11 @@
     return [
       `Batch summary`,
       `Success: ${report.successCount}/${report.totalCount} (${report.successRate.toFixed(1)}%)`,
+      `Failed: ${report.failedCount} | Skipped: ${report.skippedCount}`,
       `Avg duration: ${Math.round(report.avgDurationMs)} ms`,
+      `Median duration: ${Math.round(report.medianDurationMs)} ms`,
+      `P90 duration: ${Math.round(report.p90DurationMs)} ms`,
+      `Throughput: ${report.throughputPerMinute.toFixed(2)} url/min`,
       `Retries used: ${report.totalRetryAttempts}`,
       `Most common error: ${report.mostCommonErrorCategory || "none"}`,
       failed ? `Failed URLs:\n${failed}` : "Failed URLs:\n- none",
@@ -3968,23 +4297,42 @@
   function buildReportFromManifest(manifest) {
     const entries = manifest.entries || [];
     const totalCount = entries.length;
+    const failedCount = entries.filter(
+      (entry) => entry.status === "failed",
+    ).length;
+    const skippedCount = entries.filter(
+      (entry) => entry.status === "skipped",
+    ).length;
     const successEntries = entries.filter(
       (entry) => entry.status === "success",
+    );
+    const completedEntries = entries.filter(
+      (entry) => entry.status !== "running",
     );
     const successCount = successEntries.length;
     const successRate =
       totalCount === 0 ? 0 : (successCount / totalCount) * 100;
+    const completedDurations = completedEntries
+      .map((entry) => Number(entry.durationMs) || 0)
+      .filter((value) => Number.isFinite(value) && value >= 0)
+      .sort((a, b) => a - b);
     const avgDurationMs =
-      successEntries.length === 0
+      completedDurations.length === 0
         ? 0
-        : successEntries.reduce(
-            (sum, entry) => sum + (entry.durationMs || 0),
-            0,
-          ) / successEntries.length;
+        : completedDurations.reduce((sum, value) => sum + value, 0) /
+          completedDurations.length;
+    const medianDurationMs = percentileFromSorted(completedDurations, 0.5);
+    const p90DurationMs = percentileFromSorted(completedDurations, 0.9);
     const totalRetryAttempts = entries.reduce(
       (sum, entry) => sum + Math.max(0, (entry.attempts || 1) - 1),
       0,
     );
+    const createdAtMs = Date.parse(manifest.createdAt || "");
+    const elapsedMs = Number.isFinite(createdAtMs)
+      ? Math.max(0, Date.now() - createdAtMs)
+      : 0;
+    const throughputPerMinute =
+      elapsedMs === 0 ? 0 : (completedEntries.length / elapsedMs) * 60000;
     const errorCounts = {};
     for (const entry of entries) {
       if (!entry.errorCategory) continue;
@@ -3997,8 +4345,13 @@
     return {
       totalCount,
       successCount,
+      failedCount,
+      skippedCount,
       successRate,
       avgDurationMs,
+      medianDurationMs,
+      p90DurationMs,
+      throughputPerMinute,
       totalRetryAttempts,
       mostCommonErrorCategory,
     };
@@ -4073,6 +4426,7 @@
     els.batchDownloadCsvButton.disabled = true;
     els.generateButton.disabled = true;
     setBatchReportCard("");
+    updateIdleBatchStatsPreview();
 
     const manifest = {
       runId: `run-${Date.now()}`,
@@ -4094,6 +4448,7 @@
     );
     let queueCursor = 0;
     const zipPendingEntries = [];
+    updateBatchStatsFromManifest(manifest, queue.length);
 
     appendBatchLog(
       `Batch started with ${queue.length} URL(s), concurrency=${config.concurrency}, retry=${config.retryCount}, output=${config.jsonOutputMode}.`,
@@ -4115,6 +4470,7 @@
           status: "running",
         };
         manifest.entries.push(entry);
+        updateBatchStatsFromManifest(manifest, queue.length);
 
         try {
           const { result, attempts, elapsedMs } =
@@ -4267,6 +4623,7 @@
           (entry) => entry.status !== "running",
         ).length;
         els.batchProgressInput.value = `Completed ${completed}/${queue.length}`;
+        updateBatchStatsFromManifest(manifest, queue.length);
         if (config.delayMs > 0) await sleepWithPause(config.delayMs);
       }
     };
@@ -4285,10 +4642,14 @@
       const report = buildReportFromManifest(manifest);
       setBatchReportCard(
         `Success: ${report.successCount}/${report.totalCount} (${report.successRate.toFixed(1)}%)\n` +
+          `Failed: ${report.failedCount} | Skipped: ${report.skippedCount}\n` +
           `Avg duration: ${Math.round(report.avgDurationMs)} ms\n` +
+          `Median/P90: ${Math.round(report.medianDurationMs)} / ${Math.round(report.p90DurationMs)} ms\n` +
+          `Throughput: ${report.throughputPerMinute.toFixed(2)} url/min\n` +
           `Retries used: ${report.totalRetryAttempts}\n` +
           `Most common error: ${report.mostCommonErrorCategory || "none"}`,
       );
+      updateBatchStatsFromManifest(manifest, queue.length);
 
       const successfulCharacters = zipPendingEntries.map(
         (zipEntry) => zipEntry.character,
@@ -4406,6 +4767,7 @@
       els.batchRetryCurrentButton.disabled = true;
       els.generateButton.disabled = false;
       els.batchProgressInput.value = `Finished run at ${new Date().toLocaleTimeString()}`;
+      updateBatchStatsFromManifest(manifest, queue.length);
     }
   }
 
